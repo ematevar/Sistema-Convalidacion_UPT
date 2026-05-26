@@ -1,0 +1,72 @@
+﻿CODIGO , CICLO    , ASIGNATURA                                        , Horas Teorica, Hora Practica, Total Horas, CREDITOS, PRERREQUISITO      
+EG-181 , 1        , COMUNICACIÓN I                                    ,             3,             2,           5,        4, -                   
+EG-182 , 1        , MATEMÁTICA BÁSICA                                 ,             2,             4,           6,        4, -                   
+EG-183 , 1        , ESTRATEGIAS PARA EL APRENDIZAJE AUTÓNOMO          ,             3,             0,           3,        3, -                   
+EG-184 , 1        , DESARROLLO PERSONAL Y LIDERAZGO                   ,             3,             0,           3,        3, -                   
+EG-185 , 1        , DESARROLLO DE COMPETENCIAS DIGITALES              ,             2,             2,           4,        3, -                   
+INE-186, 1        , MATEMÁTICA I                                      ,             4,             2,           6,        5, -                   
+EG-281 , 2        , COMUNICACIÓN II                                   ,             2,             2,           4,        3, EG-181              
+EG-282 , 2        , TERRITORIO PERUANO DEFENSA Y SEGURIDAD NACIONAL   ,             3,             0,           3,        3, -                   
+EG-283 , 2        , FILOSOFÍA                                         ,             3,             0,           3,        3, -                   
+INE-284, 2        , TÉCNICAS DE PROGRAMACIÓN                          ,             2,             4,           6,        4, -                   
+INE-285, 2        , FÍSICA I                                          ,             3,             2,           5,        4, -                   
+INE-286, 2        , MATEMÁTICA II                                     ,             4,             2,           6,        5, INE-186             
+INE-381, 3        , ECONOMÍA                                          ,             3,             0,           3,        3, -                   
+EG-382 , 3        , ÉTICA                                             ,             3,             0,           3,        3, EG-283              
+INE-383, 3        , ESTADÍSTICA Y PROBABILIDADES                      ,             2,             2,           4,        3, -                   
+SI-384 , 3        , ESTRUCTURA DE DATOS                               ,             2,             4,           6,        4, INE-284             
+SI-385 , 3        , SISTEMAS DE INFORMACIÓN                           ,             2,             2,           4,        3, -                   
+SI-386 , 3        , MATEMÁTICA DISCRETA                               ,             2,             4,           6,        4, INE-286             
+SI-481 , 4        , MODELAMIENTO DE PROCESOS                          ,             2,             4,           6,        4, SI-385              
+SI-482 , 4        , INGENIERÍA ECONÓMICA Y FINANCIERA                 ,             2,             2,           4,        3, INE-381             
+SI-483 , 4        , INTERACCIÓN Y DISEÑO DE INTERFACES                ,             2,             2,           4,        3, -                   
+INE-484, 4        , DISEÑO EN INGENIERÍA                              ,             2,             4,           6,        4, -                   
+SI-485 , 4        , SISTEMAS ELECTRÓNICOS DIGITALES                   ,             2,             4,           6,        4, SI-386              
+SI-486 , 4        , PROGRAMACIÓN I                                    ,             2,             4,           6,        4, SI-384              
+SI-581 , 5        , ARQUITECTURA DE COMPUTADORAS                      ,             2,             4,           6,        4, SI-485              
+SI-582 , 5        , DISEÑO DE BASE DE DATOS                           ,             2,             4,           6,        4, SI-481              
+SI-583 , 5        , DISEÑO Y MODELAMIENTO VIRTUAL                     ,             2,             2,           4,        3, INE-484             
+SI-584 , 5        , INGENIERÍA DE REQUERIMIENTOS                      ,             2,             4,           6,        4, SI-481              
+SI-585 , 5        , INGENIERÍA DE SOFTWARE                            ,             2,             2,           4,        3, SI-483              
+SI-586 , 5        , PROGRAMACIÓN II                                   ,             2,             4,           6,        4, SI-486              
+EG-681 , 6        , ECOLOGÍA Y DESARROLLO SOSTENIBLE                  ,             3,             0,           3,        3, -                   
+SI-682 , 6        , SISTEMAS OPERATIVOS I                             ,             2,             4,           6,        4, SI-581              
+SI-683 , 6        , BASE DE DATOS I                                   ,             2,             4,           6,        4, SI-582              
+SI-684 , 6        , INVESTIGACIÓN DE OPERACIONES                      ,             2,             2,           4,        3, SI-585              
+SI-685 , 6        , DISEÑO Y ARQUITECTURA DE SOFTWARE                 ,             2,             4,           6,        4, SI-584              
+SI-686 , 6        , PROGRAMACIÓN III                                  ,             2,             4,           6,        4, SI-586              
+EG-781 , 7        , PROBLEMAS Y DESAFIOS DEL PERÚ EN UN MUNDO GLOBAL  ,             3,             0,           3,        3, -                   
+SI-782 , 7        , SISTEMAS OPERATIVOS II                            ,             2,             4,           6,        4, SI-682              
+SI-783 , 7        , BASE DE DATOS II                                  ,             2,             4,           6,        4, SI-683              
+SI-784 , 7        , CALIDAD Y PRUEBAS DE SOFTWARE                     ,             2,             2,           4,        3, SI-686              
+SI-785 , 7        , GESTIÓN DE PROYECTOS DE TI                        ,             2,             4,           6,        4, SI-684              
+SI-786 , 7        , PROGRAMACIÓN WEB I                                ,             2,             4,           6,        4, SI-683              
+SI-881 , 8        , INTELIGENCIA ARTIFICIAL                           ,             2,             2,           4,        3, SI-783              
+SI-882 , 8        , REDES Y COMUNICACIÓN DE DATOS I                   ,             2,             2,           4,        3, SI-782              
+SI-883 , 8        , SOLUCIONES MÓVILES I                              ,             2,             4,           6,        4, SI-786              
+SI-884 , 8        , ESTADÍSTICA INFERENCIAL Y ANÁLISIS DE DATOS       ,             2,             2,           4,        3, SI-783              
+SI-885 , 8        , INTELIGENCIA DE NEGOCIOS                          ,             2,             4,           6,        4, SI-783              
+SI-886 , 8        , PLANEAMIENTO ESTRATÉGICO DE TI                    ,             2,             2,           4,        3, SI-785              
+SI-981 , 9        , TALLER DE TESIS I                                 ,             3,             0,           3,        3, SI-884              
+SI-982 , 9        , PROGRAMACIÓN WEB II                               ,             2,             4,           6,        4, SI-883              
+SI-983 , 9        , CONSTRUCCIÓN DE SOFTWARE I                        ,             2,             4,           6,        4, SI-883              
+SI-984 , 9        , REDES Y COMUNICACIÓN DE DATOS II                  ,             2,             2,           4,        3, SI-882              
+SI-985 , 9        , GESTIÓN DE LA CONFIGURACIÓN DE SOFTWARE           ,             2,             2,           4,        3, SI-885              
+SI-986 , 9        , INGLÉS TÉCNICO                                    ,             2,             2,           4,        3, * ingles intermedio 
+SI-082 , 10       , SEGURIDAD DE TECNOLOGÍA DE INFORMACIÓN            ,             2,             2,           4,        3, SI-985              
+SI-083 , 10       , CONSTRUCCIÓN DE SOFTWARE II                       ,             2,             4,           6,        4, SI-983              
+SI-084 , 10       , AUDITORÍA DE SISTEMAS                             ,             2,             2,           4,        3, SI-985              
+SI-085 , 10       , TALLER DE EMPRENDIMIENTO Y LIDERAZGO              ,             2,             2,           4,        3, -                   
+SI-086 , 10       , GERENCIA DE TECNOLOGÍAS DE INFORMACIÓN            ,             2,             2,           4,        3, SI-983              
+SI-080 , 10       , TALLER DE TESIS II / TRABAJO DE INVESTIGACIÓN     ,             3,             0,           3,        3, SI-981              
+SI-8810, ELECTIVOS, SISTEMAS DE RECURSOS EMPRESARIALES                ,             2,             2,           4,        3, SI-685              
+SI-8811, ELECTIVOS, TÓPICOS DE BASE DE DATOS AVANZADOS I              ,             2,             2,           4,        3, SI-783              
+SI-887 , ELECTIVOS, INTERNET DE LAS COSAS                             ,             2,             2,           4,        3, SI-782              
+SI-888 , ELECTIVOS, DISEÑO Y CREACIÓN DE VIDEOJUEGOS                  ,             2,             2,           4,        3, SI-686              
+SI-889 , ELECTIVOS, PATRONES DE SOFTWARE                              ,             2,             2,           4,        3, SI-685              
+SI-987 , ELECTIVOS, CLOUD COMPUTING                                   ,             2,             2,           4,        3, SI-783              
+SI-988 , ELECTIVOS, SOLUCIONES MÓVILES II                             ,             2,             2,           4,        3, SI-883              
+SI-989 , ELECTIVOS, MACHINE LEARNING                                  ,             2,             2,           4,        3, SI-881              
+SI-087 , ELECTIVOS, INFRAESTRUCTURA DE TI                             ,             2,             2,           4,        3, SI-984              
+SI-088 , ELECTIVOS, MODELO DE NEGOCIOS DIGITALES                      ,             2,             2,           4,        3, SI-786              
+SI-089 , ELECTIVOS, TÓPICOS DE BASE DE DATOS AVANZADOS II             ,             2,             2,           4,        3, SI-885              
