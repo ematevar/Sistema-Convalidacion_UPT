@@ -49,9 +49,11 @@
             lblTotalCreditos = new Label();
             btnGuardarConvalidacion = new Button();
             txtTotal = new TextBox();
-            gbDatosEstudiante.SuspendLayout();
+            btnEliminarCurso = new Button();
+            btnLimpiarFormulario = new Button();
             gbRegistroCursos.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCursos).BeginInit();
+            gbDatosEstudiante.SuspendLayout();
             SuspendLayout();
             // 
             // gbDatosEstudiante
@@ -220,14 +222,16 @@
             // 
             // btnAgregarCurso
             // 
+            btnAgregarCurso.BackColor = Color.LimeGreen;
             btnAgregarCurso.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnAgregarCurso.ForeColor = Color.White;
             btnAgregarCurso.Location = new Point(590, 60);
             btnAgregarCurso.Margin = new Padding(3, 4, 3, 4);
             btnAgregarCurso.Name = "btnAgregarCurso";
             btnAgregarCurso.Size = new Size(210, 44);
             btnAgregarCurso.TabIndex = 9;
-            btnAgregarCurso.Text = "Añadir Asignatura";
-            btnAgregarCurso.UseVisualStyleBackColor = true;
+            btnAgregarCurso.Text = "+ Agregar Asignatura";
+            btnAgregarCurso.UseVisualStyleBackColor = false;
             // 
             // dgvCursos
             // 
@@ -241,6 +245,7 @@
             dgvCursos.RowTemplate.Height = 24;
             dgvCursos.Size = new Size(830, 312);
             dgvCursos.TabIndex = 10;
+            dgvCursos.CellEndEdit += dgvCursos_CellEndEdit;
             // 
             // lblTotalCreditos
             // 
@@ -254,28 +259,60 @@
             // 
             // btnGuardarConvalidacion
             // 
+            btnGuardarConvalidacion.BackColor = Color.RoyalBlue;
             btnGuardarConvalidacion.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnGuardarConvalidacion.ForeColor = Color.White;
             btnGuardarConvalidacion.Location = new Point(240, 762);
             btnGuardarConvalidacion.Margin = new Padding(3, 4, 3, 4);
             btnGuardarConvalidacion.Name = "btnGuardarConvalidacion";
-            btnGuardarConvalidacion.Size = new Size(400, 56);
+            btnGuardarConvalidacion.Size = new Size(200, 56);
             btnGuardarConvalidacion.TabIndex = 12;
-            btnGuardarConvalidacion.Text = "Guardar Registro";
-            btnGuardarConvalidacion.UseVisualStyleBackColor = true;
+            btnGuardarConvalidacion.Text = "✓ Guardar Registro";
+            btnGuardarConvalidacion.UseVisualStyleBackColor = false;
             // 
             // txtTotal
             //
             txtTotal.Location = new Point(289, 713);
             txtTotal.Margin = new Padding(3, 4, 3, 4);
             txtTotal.Name = "txtTotal";
+            txtTotal.ReadOnly = true;
             txtTotal.Size = new Size(140, 27);
             txtTotal.TabIndex = 10;
+            txtTotal.BackColor = Color.WhiteSmoke;
+            // 
+            // btnEliminarCurso
+            // 
+            btnEliminarCurso.BackColor = Color.Red;
+            btnEliminarCurso.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnEliminarCurso.ForeColor = Color.White;
+            btnEliminarCurso.Location = new Point(470, 762);
+            btnEliminarCurso.Margin = new Padding(3, 4, 3, 4);
+            btnEliminarCurso.Name = "btnEliminarCurso";
+            btnEliminarCurso.Size = new Size(200, 56);
+            btnEliminarCurso.TabIndex = 13;
+            btnEliminarCurso.Text = "✕ Eliminar Seleccionado";
+            btnEliminarCurso.UseVisualStyleBackColor = false;
+            // 
+            // btnLimpiarFormulario
+            // 
+            btnLimpiarFormulario.BackColor = Color.Orange;
+            btnLimpiarFormulario.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnLimpiarFormulario.ForeColor = Color.White;
+            btnLimpiarFormulario.Location = new Point(690, 762);
+            btnLimpiarFormulario.Margin = new Padding(3, 4, 3, 4);
+            btnLimpiarFormulario.Name = "btnLimpiarFormulario";
+            btnLimpiarFormulario.Size = new Size(165, 56);
+            btnLimpiarFormulario.TabIndex = 14;
+            btnLimpiarFormulario.Text = "Nuevo Registro";
+            btnLimpiarFormulario.UseVisualStyleBackColor = false;
             // 
             // SistemaConvalidacion
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(882, 854);
+            Controls.Add(btnLimpiarFormulario);
+            Controls.Add(btnEliminarCurso);
             Controls.Add(txtTotal);
             Controls.Add(btnGuardarConvalidacion);
             Controls.Add(lblTotalCreditos);
@@ -288,11 +325,11 @@
             Name = "SistemaConvalidacion";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Sistema de Reconocimiento de Movilidad Internacional - UPT";
-            gbDatosEstudiante.ResumeLayout(false);
-            gbDatosEstudiante.PerformLayout();
             gbRegistroCursos.ResumeLayout(false);
             gbRegistroCursos.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dgvCursos).EndInit();
+            gbDatosEstudiante.ResumeLayout(false);
+            gbDatosEstudiante.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
 
@@ -323,5 +360,7 @@
         private System.Windows.Forms.Label lblTotalCreditos;
         private System.Windows.Forms.Button btnGuardarConvalidacion;
         private System.Windows.Forms.TextBox txtTotal;
+        private System.Windows.Forms.Button btnEliminarCurso;
+        private System.Windows.Forms.Button btnLimpiarFormulario;
     }
 }
