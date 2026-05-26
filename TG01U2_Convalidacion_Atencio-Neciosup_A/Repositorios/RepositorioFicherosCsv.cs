@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -52,8 +53,8 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Repositorios
                         Escapar(curso.Codigo),
                         Escapar(curso.Nombre),
                         curso.Creditos,
-                        curso.NotaExtranjera.ToString("F2"),
-                        curso.NotaPeruana.ToString("F2")
+                        curso.NotaExtranjera.ToString("F2", CultureInfo.InvariantCulture),
+                        curso.NotaPeruana.ToString("F2", CultureInfo.InvariantCulture)
                     ));
                 }
             }
@@ -75,7 +76,7 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Repositorios
                 if (p.Length < 6) continue;
 
                 int.TryParse(p[4], out int anio);
-                var conv = new Convalidacion
+                lista.Add(new Convalidacion
                 {
                     IdConvalidacion = p[0],
                     NombreEstudiante = p[1],
@@ -83,8 +84,7 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Repositorios
                     UniversidadOrigen = p[3],
                     Anio = anio,
                     Semestre = p[5]
-                };
-                lista.Add(conv);
+                });
             }
 
             if (File.Exists(_rutaCursos))
@@ -100,8 +100,8 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Repositorios
                     if (padre == null) continue;
 
                     int.TryParse(p[3], out int creditos);
-                    double.TryParse(p[4], out double notaExt);
-                    double.TryParse(p[5], out double notaPeru);
+                    double.TryParse(p[4], NumberStyles.Number, CultureInfo.InvariantCulture, out double notaExt);
+                    double.TryParse(p[5], NumberStyles.Number, CultureInfo.InvariantCulture, out double notaPeru);
 
                     padre.CursosConvalidados.Add(new Curso
                     {
@@ -141,9 +141,7 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Repositorios
         {
             if (string.IsNullOrEmpty(campo)) return "";
             if (campo.Contains(",") || campo.Contains("\""))
-            {
                 return "\"" + campo.Replace("\"", "\"\"") + "\"";
-            }
             return campo;
         }
 
@@ -151,7 +149,7 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Repositorios
         {
             var campos = new List<string>();
             bool enComillas = false;
-            StringBuilder campoActual = new StringBuilder();
+            var campoActual = new StringBuilder();
 
             for (int i = 0; i < linea.Length; i++)
             {
@@ -162,7 +160,7 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Repositorios
                     if (enComillas && i + 1 < linea.Length && linea[i + 1] == '"')
                     {
                         campoActual.Append('"');
-                        i++; // Saltar siguiente comilla
+                        i++; // saltar comilla escapada
                     }
                     else
                     {

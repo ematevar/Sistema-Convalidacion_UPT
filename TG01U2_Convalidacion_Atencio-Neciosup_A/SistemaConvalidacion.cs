@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows.Forms;
 using TG01U2_Convalidacion_Atencio_Neciosup_A.Servicios;
 using TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones;
@@ -150,9 +151,10 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
                 return;
             }
 
-            if (!double.TryParse(txtNotaExtranjera.Text, out double notaExt))
+            if (!double.TryParse(txtNotaExtranjera.Text,
+                    NumberStyles.Number, CultureInfo.InvariantCulture, out double notaExt))
             {
-                MostrarAdvertencia("Ingrese una nota válida (número decimal).");
+                MostrarAdvertencia("Ingrese una nota válida (número decimal, use punto como separador).");
                 txtNotaExtranjera.Focus();
                 return;
             }
@@ -253,7 +255,9 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
                 return;
 
             var celda = dgvCursos[e.ColumnIndex, e.RowIndex];
-            if (celda.Value == null || !double.TryParse(celda.Value.ToString(), out double nuevaNota))
+            if (celda.Value == null ||
+                !double.TryParse(celda.Value.ToString(),
+                    NumberStyles.Number, CultureInfo.InvariantCulture, out double nuevaNota))
             {
                 MostrarAdvertencia("Ingrese un valor numérico válido.");
                 ActualizarVistaCursos();

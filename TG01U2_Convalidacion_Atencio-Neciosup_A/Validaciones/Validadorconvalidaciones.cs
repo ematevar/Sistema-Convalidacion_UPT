@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -101,7 +102,7 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             if (string.IsNullOrWhiteSpace(notaTexto))
                 return (false, "La nota no puede estar vacía.");
 
-            if (!double.TryParse(notaTexto, out double nota))
+            if (!double.TryParse(notaTexto, NumberStyles.Number, CultureInfo.InvariantCulture, out double nota))
                 return (false, "La nota debe ser un número válido.");
 
             if (nota < NOTA_MINIMA)
