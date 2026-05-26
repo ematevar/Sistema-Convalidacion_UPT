@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using OxyPlot;
@@ -13,8 +12,8 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
 {
     public partial class FormEstadisticas : Form
     {
-        private List<Convalidacion> historialDatos;
-        private ConvalidacionService _convalidacionService;
+        private List<Convalidacion> _historialDatos;
+        private readonly ConvalidacionService _convalidacionService;
 
         public FormEstadisticas()
         {
@@ -26,70 +25,78 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
             );
             _convalidacionService = new ConvalidacionService(repositorio);
 
-            ConfigurarEventos();
+            cmbFiltro.SelectedIndex = 0;
+            cmbFiltro.SelectedIndexChanged += (s, e) => GenerarReporte(cmbFiltro.Text);
+
             CargarDatos();
         }
 
-        private void ConfigurarEventos()
-        {
-            cmbFiltro.SelectedIndex = 0;
-            cmbFiltro.SelectedIndexChanged += CmbFiltro_SelectedIndexChanged;
-        }
+        // ─── Carga ────────────────────────────────────────────────────────────────
 
         private void CargarDatos()
         {
-            historialDatos = _convalidacionService.ObtenerConvalidaciones();
-            lblTotal.Text = $"Total Convalidaciones Históricas: {historialDatos.Count}";
+            _historialDatos = _convalidacionService.ObtenerConvalidaciones();
+            lblTotal.Text = $"Total Convalidaciones: {_historialDatos.Count}";
             GenerarReporte(cmbFiltro.Text);
         }
 
-        private void CmbFiltro_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            GenerarReporte(cmbFiltro.Text);
-        }
+        // ─── Reporte ──────────────────────────────────────────────────────────────
 
         private void GenerarReporte(string filtro)
         {
-            if (historialDatos == null || historialDatos.Count == 0) return;
+            if (_historialDatos == null || _historialDatos.Count == 0) return;
 
-            // Agrupa la información según lo que pida el usuario
-            var query = historialDatos.GroupBy(c => c.PaisOrigen)
-                                      .Select(g => new { Criterio = g.Key, Cantidad = g.Count() }).ToList();
+            var datos = AgruparPorFiltro(filtro);
 
-            if (filtro == "Por País")
-                query = historialDatos.GroupBy(c => c.PaisOrigen).Select(g => new { Criterio = g.Key, Cantidad = g.Count() }).ToList();
-            else if (filtro == "Por Universidad")
-                query = historialDatos.GroupBy(c => c.UniversidadOrigen).Select(g => new { Criterio = g.Key, Cantidad = g.Count() }).ToList();
-            else if (filtro == "Por Año")
-                query = historialDatos.GroupBy(c => c.Anio.ToString()).Select(g => new { Criterio = g.Key, Cantidad = g.Count() }).ToList();
-            else if (filtro == "Por Semestre")
-                query = historialDatos.GroupBy(c => c.Semestre).Select(g => new { Criterio = g.Key, Cantidad = g.Count() }).ToList();
-            else if (filtro == "Por Estudiante")
-                query = historialDatos.GroupBy(c => c.NombreEstudiante).Select(g => new { Criterio = g.Key, Cantidad = g.Count() }).ToList();
+            dgvConsultas.DataSource = datos;
+            if (dgvConsultas.Columns.Contains("Criterio"))
+                dgvConsultas.Columns["Criterio"].HeaderText = filtro.Replace("Por ", "");
 
-            // Llena la tabla
-            dgvConsultas.DataSource = query;
-            dgvConsultas.Columns["Criterio"].HeaderText = filtro.Replace("Por ", "");
+            DibujarGrafico(filtro, datos);
+        }
 
-            // Dibuja el gráfico con OxyPlot
-            var plotModel = new PlotModel { Title = $"Estadísticas {filtro}" };
+        private List<ResumenFiltro> AgruparPorFiltro(string filtro) => filtro switch
+        {
+            "Por Universidad" => Agrupar(c => c.UniversidadOrigen),
+            "Por Año" => Agrupar(c => c.Anio.ToString()),
+            "Por Semestre" => Agrupar(c => c.Semestre),
+            "Por Estudiante" => Agrupar(c => c.NombreEstudiante),
+            _ => Agrupar(c => c.PaisOrigen)          // "Por País" es el default
+        };
 
-            var categoryAxis = new OxyPlot.Axes.CategoryAxis { Position = OxyPlot.Axes.AxisPosition.Left };
-            var valueAxis = new OxyPlot.Axes.LinearAxis { Position = OxyPlot.Axes.AxisPosition.Bottom };
+        private List<ResumenFiltro> Agrupar(Func<Convalidacion, string> selector) =>
+            _historialDatos
+                .GroupBy(selector)
+                .Select(g => new ResumenFiltro { Criterio = g.Key ?? "No especificado", Cantidad = g.Count() })
+                .OrderByDescending(x => x.Cantidad)
+                .ToList();
 
-            plotModel.Axes.Add(categoryAxis);
-            plotModel.Axes.Add(valueAxis);
+        private void DibujarGrafico(string titulo, List<ResumenFiltro> datos)
+        {
+            var modelo = new PlotModel { Title = $"Estadísticas {titulo}" };
 
-            var series = new OxyPlot.Series.BarSeries { Title = "Cantidad" };
+            var ejeCategoria = new OxyPlot.Axes.CategoryAxis { Position = OxyPlot.Axes.AxisPosition.Left };
+            var ejeValor = new OxyPlot.Axes.LinearAxis { Position = OxyPlot.Axes.AxisPosition.Bottom };
+            modelo.Axes.Add(ejeCategoria);
+            modelo.Axes.Add(ejeValor);
 
-            foreach (var item in query)
+            var serie = new BarSeries { Title = "Cantidad" };
+            foreach (var item in datos)
             {
-                categoryAxis.Labels.Add(item.Criterio);
-                series.Items.Add(new BarItem { Value = item.Cantidad });
+                ejeCategoria.Labels.Add(item.Criterio);
+                serie.Items.Add(new BarItem { Value = item.Cantidad });
             }
 
-            plotModel.Series.Add(series);
-            graficoEstadistico.Model = plotModel;
+            modelo.Series.Add(serie);
+            graficoEstadistico.Model = modelo;
+        }
+
+        // ─── DTO interno ──────────────────────────────────────────────────────────
+
+        private class ResumenFiltro
+        {
+            public string Criterio { get; set; }
+            public int Cantidad { get; set; }
         }
     }
 }

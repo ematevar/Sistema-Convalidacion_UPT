@@ -6,12 +6,11 @@ using System.Text.RegularExpressions;
 namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
 {
     /// <summary>
-    /// Clase de validación centralizada para todas las operaciones de convalidación
-    /// Proporciona métodos estáticos para validar datos antes de guardar
+    /// Validaciones centralizadas para todas las operaciones de convalidación.
+    /// Único punto de verdad para reglas de negocio de entrada de datos.
     /// </summary>
     public static class ValidadorConvalidaciones
     {
-        // Constantes de validación
         public const int LONGITUD_MINIMA_NOMBRE = 3;
         public const int LONGITUD_MAXIMA_NOMBRE = 100;
         public const int LONGITUD_MINIMA_UNIVERSIDAD = 3;
@@ -19,9 +18,13 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
         public const int AÑO_MINIMO = 1985;
         public const double NOTA_MINIMA = 0.0;
 
-        /// <summary>
-        /// Valida el nombre del estudiante
-        /// </summary>
+        private static readonly string[] PaisesValidos =
+        {
+            "Argentina", "Bolivia", "Brasil", "Chile", "Colombia",
+            "Ecuador", "España", "Francia", "Grecia", "Italia",
+            "México", "Paraguay", "Perú"
+        };
+
         public static (bool esValido, string mensaje) ValidarNombreEstudiante(string nombre)
         {
             if (string.IsNullOrWhiteSpace(nombre))
@@ -35,16 +38,12 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             if (nombre.Length > LONGITUD_MAXIMA_NOMBRE)
                 return (false, $"El nombre no puede exceder {LONGITUD_MAXIMA_NOMBRE} caracteres.");
 
-            // Validar que solo contenga letras, espacios y caracteres acentuados
             if (!Regex.IsMatch(nombre, @"^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$"))
                 return (false, "El nombre solo puede contener letras y espacios.");
 
             return (true, "");
         }
 
-        /// <summary>
-        /// Valida la universidad de origen
-        /// </summary>
         public static (bool esValido, string mensaje) ValidarUniversidad(string universidad)
         {
             if (string.IsNullOrWhiteSpace(universidad))
@@ -61,26 +60,14 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             return (true, "");
         }
 
-        /// <summary>
-        /// Valida el país seleccionado
-        /// </summary>
         public static (bool esValido, string mensaje) ValidarPais(string pais)
         {
-            string[] paisesValidos = { "Perú", "Argentina", "Bolivia", "Brasil", "Chile", "Colombia",
-                                      "Ecuador", "Paraguay", "México", "España", "Francia", "Grecia", "Italia" };
-
-            if (string.IsNullOrWhiteSpace(pais))
-                return (false, "Debe seleccionar un país.");
-
-            if (!paisesValidos.Contains(pais))
-                return (false, $"'{pais}' no es un país válido.");
+            if (string.IsNullOrWhiteSpace(pais) || !PaisesValidos.Contains(pais))
+                return (false, "Debe seleccionar un país válido.");
 
             return (true, "");
         }
 
-        /// <summary>
-        /// Valida el año académico
-        /// </summary>
         public static (bool esValido, string mensaje) ValidarAnioAcademico(string anioTexto)
         {
             if (string.IsNullOrWhiteSpace(anioTexto))
@@ -99,25 +86,16 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
         }
 
         /// <summary>
-        /// Valida el semestre
+        /// Valida el semestre. Acepta "1" o "2" (valores del ComboBox).
         /// </summary>
         public static (bool esValido, string mensaje) ValidarSemestre(string semestre)
         {
-            if (string.IsNullOrWhiteSpace(semestre))
-                return (false, "El semestre no puede estar vacío.");
-
-            semestre = semestre.Trim();
-
-            // Aceptar números del 1 al 2 o texto como "I", "II", "Primero", "Segundo"
-            if (!Regex.IsMatch(semestre, @"^([1-2]|I{1,2}|Primero|Segundo|primero|segundo)$", RegexOptions.IgnoreCase))
-                return (false, "El semestre debe ser 1, 2, I, II, 'Primero' o 'Segundo'.");
+            if (semestre != "1" && semestre != "2")
+                return (false, "El semestre debe ser 1 o 2.");
 
             return (true, "");
         }
 
-        /// <summary>
-        /// Valida una nota en rango genérico
-        /// </summary>
         public static (bool esValido, string mensaje) ValidarNota(string notaTexto, double notaMaxima)
         {
             if (string.IsNullOrWhiteSpace(notaTexto))
@@ -135,9 +113,6 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             return (true, "");
         }
 
-        /// <summary>
-        /// Valida que un curso no esté duplicado en la lista
-        /// </summary>
         public static (bool esValido, string mensaje) ValidarCursoDuplicado(List<Curso> cursos, Curso cursoNuevo)
         {
             if (cursos == null || cursos.Count == 0)
@@ -149,44 +124,26 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             return (true, "");
         }
 
-        /// <summary>
-        /// Valida que la convalidación tenga datos mínimos requeridos
-        /// </summary>
         public static (bool esValido, string mensaje) ValidarConvalidacionCompleta(Convalidacion convalidacion)
         {
             if (convalidacion == null)
                 return (false, "La convalidación no puede ser nula.");
 
-            // Validar nombre
-            var validacionNombre = ValidarNombreEstudiante(convalidacion.NombreEstudiante);
-            if (!validacionNombre.esValido)
-                return (false, validacionNombre.mensaje);
+            var checks = new[]
+            {
+                ValidarNombreEstudiante(convalidacion.NombreEstudiante),
+                ValidarPais(convalidacion.PaisOrigen),
+                ValidarUniversidad(convalidacion.UniversidadOrigen),
+                ValidarAnioAcademico(convalidacion.Anio.ToString()),
+                ValidarSemestre(convalidacion.Semestre)
+            };
 
-            // Validar país
-            var validacionPais = ValidarPais(convalidacion.PaisOrigen);
-            if (!validacionPais.esValido)
-                return (false, validacionPais.mensaje);
+            foreach (var (esValido, mensaje) in checks)
+                if (!esValido) return (false, mensaje);
 
-            // Validar universidad
-            var validacionUniversidad = ValidarUniversidad(convalidacion.UniversidadOrigen);
-            if (!validacionUniversidad.esValido)
-                return (false, validacionUniversidad.mensaje);
-
-            // Validar año
-            var validacionAnio = ValidarAnioAcademico(convalidacion.Anio.ToString());
-            if (!validacionAnio.esValido)
-                return (false, validacionAnio.mensaje);
-
-            // Validar semestre
-            var validacionSemestre = ValidarSemestre(convalidacion.Semestre);
-            if (!validacionSemestre.esValido)
-                return (false, validacionSemestre.mensaje);
-
-            // Validar que tenga al menos un curso
             if (convalidacion.CursosConvalidados == null || convalidacion.CursosConvalidados.Count == 0)
                 return (false, "La convalidación debe tener al menos un curso.");
 
-            // Validar que cada curso tenga datos válidos
             foreach (var curso in convalidacion.CursosConvalidados)
             {
                 if (string.IsNullOrWhiteSpace(curso.Codigo) || string.IsNullOrWhiteSpace(curso.Nombre))
@@ -200,23 +157,6 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             }
 
             return (true, "");
-        }
-
-        /// <summary>
-        /// Obtiene un resumen completo de validación
-        /// </summary>
-        public static string ObtenerResumenValidacion(Convalidacion convalidacion)
-        {
-            var resultado = ValidarConvalidacionCompleta(convalidacion);
-            if (resultado.esValido)
-            {
-                return $"✓ Convalidación válida\n" +
-                       $"  Estudiante: {convalidacion.NombreEstudiante}\n" +
-                       $"  País: {convalidacion.PaisOrigen}\n" +
-                       $"  Cursos: {convalidacion.CursosConvalidados.Count}\n" +
-                       $"  Créditos totales: {convalidacion.TotalCreditos}";
-            }
-            return $"✗ Error de validación:\n{resultado.mensaje}";
         }
     }
 }
