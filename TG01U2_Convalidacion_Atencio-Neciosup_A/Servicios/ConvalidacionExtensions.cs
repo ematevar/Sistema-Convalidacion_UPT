@@ -1,15 +1,31 @@
+// ============================================================
+// ARCHIVO: Servicios/ConvalidacionExtensions.cs
+// CAMBIO:  Se agrega FiltrarPorCodigoEstudiante
+// ============================================================
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Servicios
 {
-    /// <summary>
-    /// Métodos de extensión para filtrar convalidaciones de forma fluida y encadenable.
-    /// Se usan en FormBusquedaConvalidaciones para aplicar múltiples filtros en cadena.
-    /// </summary>
     public static class ConvalidacionExtensions
     {
+        // ─── NUEVO: Filtrar por Código de Estudiante ──────────────────────────────
+        /// <summary>Filtra por código del estudiante (búsqueda parcial, sin distinción de mayúsculas).</summary>
+        public static IEnumerable<Convalidacion> FiltrarPorCodigoEstudiante(
+            this IEnumerable<Convalidacion> convalidaciones, string codigo)
+        {
+            if (string.IsNullOrWhiteSpace(codigo)) return convalidaciones;
+
+            string filtro = codigo.Trim().ToUpper();
+            return convalidaciones.Where(c =>
+                !string.IsNullOrEmpty(c.CodigoEstudiante) &&
+                c.CodigoEstudiante.ToUpper().Contains(filtro));
+        }
+
+        // ─── Existentes (sin cambios) ─────────────────────────────────────────────
+
         /// <summary>Filtra por nombre del estudiante (búsqueda parcial, sin distinción de mayúsculas).</summary>
         public static IEnumerable<Convalidacion> FiltrarPorEstudiante(
             this IEnumerable<Convalidacion> convalidaciones, string nombre)

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -10,12 +10,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Gráficos estadísticos (ya estaba) -->
     <PackageReference Include="OxyPlot.WindowsForms" Version="2.1.2" />
+
+    <!-- NUEVO: Exportación a Excel -->
+    <PackageReference Include="ClosedXML" Version="0.102.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Plan de estudios (ya estaba) -->
     <None Update="001CursosUPT-FAING-EPIS.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+
+    <!-- NUEVO: copiar los CSV de datos al directorio de ejecución -->
+    <!-- Esto soluciona el problema de TotalCreditos mostrando 0  -->
+    <None Update="convalidaciones.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="cursos_convalidados.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

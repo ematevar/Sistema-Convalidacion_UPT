@@ -1,4 +1,10 @@
-﻿using System;
+// ============================================================
+// ARCHIVO: SistemaConvalidacion.cs
+// CAMBIOS: Se agrega txtCodigoEstudiante en guardar, limpiar
+//          y validar. Busca "── NUEVO" para localizar cada cambio.
+// ============================================================
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Forms;
@@ -31,20 +37,21 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
 
         private void AsignarEventos()
         {
-            btnAgregarCurso.Click += btnAgregarCurso_Click;
+            btnAgregarCurso.Click        += btnAgregarCurso_Click;
             btnGuardarConvalidacion.Click += btnGuardarConvalidacion_Click;
-            btnEliminarCurso.Click += btnEliminarCurso_Click;
-            btnLimpiarFormulario.Click += btnLimpiarFormulario_Click;
-            dgvCursos.CellEndEdit += dgvCursos_CellEndEdit;
+            btnEliminarCurso.Click        += btnEliminarCurso_Click;
+            btnLimpiarFormulario.Click    += btnLimpiarFormulario_Click;
+            dgvCursos.CellEndEdit        += dgvCursos_CellEndEdit;
+            txtCodigoEstudiante.KeyPress += TxtCodigoEstudiante_KeyPress; // ← NUEVO: Filtrar solo números
         }
 
         private void InicializarDatos()
         {
-            _convalidacionActual = new Convalidacion();
-            _historialConvalidaciones = _convalidacionService.ObtenerConvalidaciones();
+            _convalidacionActual        = new Convalidacion();
+            _historialConvalidaciones   = _convalidacionService.ObtenerConvalidaciones();
 
             var planDeEstudios = _convalidacionService.ObtenerPlanEstudios();
-            cmbCursosUPT.DataSource = planDeEstudios;
+            cmbCursosUPT.DataSource    = planDeEstudios;
             cmbCursosUPT.DisplayMember = "Nombre";
 
             ConfigurarDataGridView();
@@ -53,17 +60,22 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
 
         private void ConfigurarDataGridView()
         {
-            dgvCursos.AllowUserToAddRows = false;
+            dgvCursos.AllowUserToAddRows    = false;
             dgvCursos.AllowUserToDeleteRows = false;
-            dgvCursos.AutoGenerateColumns = false;
-            dgvCursos.EditMode = DataGridViewEditMode.EditOnKeystroke;
+            dgvCursos.AutoGenerateColumns   = false;
+            dgvCursos.EditMode              = DataGridViewEditMode.EditOnKeystroke;
             dgvCursos.Columns.Clear();
 
-            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn { Name = "Codigo", HeaderText = "Código", DataPropertyName = "Codigo", ReadOnly = true });
-            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn { Name = "Nombre", HeaderText = "Asignatura", DataPropertyName = "Nombre", ReadOnly = true, Width = 250 });
-            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn { Name = "Creditos", HeaderText = "Créditos", DataPropertyName = "Creditos", ReadOnly = true });
-            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn { Name = "NotaExtranjera", HeaderText = "Nota Extranjera", DataPropertyName = "NotaExtranjera" });
-            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn { Name = "NotaPeruana", HeaderText = "Nota Perú", DataPropertyName = "NotaPeruana", ReadOnly = true });
+            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn
+                { Name = "Codigo",         HeaderText = "Código",          DataPropertyName = "Codigo",         ReadOnly = true });
+            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn
+                { Name = "Nombre",         HeaderText = "Asignatura",      DataPropertyName = "Nombre",         ReadOnly = true, Width = 250 });
+            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn
+                { Name = "Creditos",       HeaderText = "Créditos",        DataPropertyName = "Creditos",       ReadOnly = true });
+            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn
+                { Name = "NotaExtranjera", HeaderText = "Nota Extranjera", DataPropertyName = "NotaExtranjera" });
+            dgvCursos.Columns.Add(new DataGridViewTextBoxColumn
+                { Name = "NotaPeruana",    HeaderText = "Nota Perú",       DataPropertyName = "NotaPeruana",    ReadOnly = true });
 
             dgvCursos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
@@ -72,6 +84,15 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
 
         private bool ValidarDatosEstudiante()
         {
+            // ── NUEVO: Validar código del estudiante ───────────────────────────
+            var validCodigo = ValidadorConvalidaciones.ValidarCodigoEstudiante(txtCodigoEstudiante.Text);
+            if (!validCodigo.esValido)
+            {
+                MostrarAdvertencia(validCodigo.mensaje);
+                txtCodigoEstudiante.Focus();
+                return false;
+            }
+
             var validNombre = ValidadorConvalidaciones.ValidarNombreEstudiante(txtNombre.Text);
             if (!validNombre.esValido)
             {
@@ -120,8 +141,8 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
         {
             limInfExt = limSupExt = limInfPeru = limSupPeru = 0;
 
-            double notaMax = EquivalenciasNotaManager.ObtenerNotaMaximaPais(pais);
-            var validNota = ValidadorConvalidaciones.ValidarNota(notaExt.ToString(), notaMax);
+            double notaMax   = EquivalenciasNotaManager.ObtenerNotaMaximaPais(pais);
+            var validNota    = ValidadorConvalidaciones.ValidarNota(notaExt.ToString(), notaMax);
             if (!validNota.esValido)
             {
                 MostrarAdvertencia(validNota.mensaje);
@@ -172,10 +193,14 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
                 return;
             }
 
-            var nuevoCurso = new Curso(cursoSeleccionado.Codigo, cursoSeleccionado.Nombre, cursoSeleccionado.Creditos)
+            var nuevoCurso = new Curso(
+                cursoSeleccionado.Codigo,
+                cursoSeleccionado.Nombre,
+                cursoSeleccionado.Creditos)
             {
                 NotaExtranjera = notaExt,
-                NotaPeruana = GestorEquivalencias.CalcularNotaPeru(notaExt, limInfExt, limSupExt, limInfPeru, limSupPeru)
+                NotaPeruana    = GestorEquivalencias.CalcularNotaPeru(
+                    notaExt, limInfExt, limSupExt, limInfPeru, limSupPeru)
             };
 
             _convalidacionActual.AgregarCurso(nuevoCurso);
@@ -222,11 +247,14 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
 
             try
             {
-                _convalidacionActual.NombreEstudiante = txtNombre.Text.Trim();
-                _convalidacionActual.PaisOrigen = cmbPais.Text;
+                // ── NUEVO: guardar CodigoEstudiante ─────────────────────────
+                _convalidacionActual.CodigoEstudiante  = txtCodigoEstudiante.Text.Trim();
+
+                _convalidacionActual.NombreEstudiante  = txtNombre.Text.Trim();
+                _convalidacionActual.PaisOrigen        = cmbPais.Text;
                 _convalidacionActual.UniversidadOrigen = txtUniversidad.Text.Trim();
-                _convalidacionActual.Anio = int.Parse(txtAnio.Text);
-                _convalidacionActual.Semestre = cmbSemestre.Text;
+                _convalidacionActual.Anio              = int.Parse(txtAnio.Text);
+                _convalidacionActual.Semestre          = cmbSemestre.Text;
 
                 _historialConvalidaciones.Add(_convalidacionActual);
                 _convalidacionService.GuardarConvalidaciones(_historialConvalidaciones);
@@ -234,6 +262,7 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
                 MostrarInfo(
                     $"Convalidación guardada exitosamente.\n\n" +
                     $"ID: {_convalidacionActual.IdConvalidacion}\n" +
+                    $"Código: {_convalidacionActual.CodigoEstudiante}\n" +  // ← NUEVO
                     $"Estudiante: {_convalidacionActual.NombreEstudiante}\n" +
                     $"Créditos: {_convalidacionActual.TotalCreditos}");
 
@@ -273,8 +302,9 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
             }
 
             _convalidacionActual.CursosConvalidados[e.RowIndex].NotaExtranjera = nuevaNota;
-            _convalidacionActual.CursosConvalidados[e.RowIndex].NotaPeruana =
-                GestorEquivalencias.CalcularNotaPeru(nuevaNota, limInfExt, limSupExt, limInfPeru, limSupPeru);
+            _convalidacionActual.CursosConvalidados[e.RowIndex].NotaPeruana    =
+                GestorEquivalencias.CalcularNotaPeru(
+                    nuevaNota, limInfExt, limSupExt, limInfPeru, limSupPeru);
 
             ActualizarVistaCursos();
             MostrarInfo("Nota actualizada correctamente.");
@@ -295,6 +325,8 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
         private void LimpiarFormulario()
         {
             _convalidacionActual = new Convalidacion();
+            // ── NUEVO: limpiar código ────────────────────────────────────────
+            txtCodigoEstudiante.Clear();
             txtNombre.Clear();
             txtUniversidad.Clear();
             txtAnio.Clear();
@@ -302,17 +334,28 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A
             cmbSemestre.SelectedIndex = -1;
             if (cmbPais.Items.Count > 0) cmbPais.SelectedIndex = 0;
             ActualizarVistaCursos();
-            txtNombre.Focus();
+            txtCodigoEstudiante.Focus();   // ← foco al primer campo
         }
 
-        private static void MostrarAdvertencia(string mensaje) =>
-            MessageBox.Show(mensaje, "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            private static void MostrarAdvertencia(string mensaje) =>
+                MessageBox.Show(mensaje, "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-        private static void MostrarInfo(string mensaje) =>
-            MessageBox.Show(mensaje, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            private static void MostrarInfo(string mensaje) =>
+                MessageBox.Show(mensaje, "Información", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-        private static bool ConfirmarAccion(string pregunta) =>
-            MessageBox.Show(pregunta, "Confirmar", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-            == DialogResult.Yes;
-    }
+            private static bool ConfirmarAccion(string pregunta) =>
+                MessageBox.Show(pregunta, "Confirmar",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+
+            // ─── NUEVO: Evento KeyPress para filtrar solo números en código de estudiante ─────
+            private void TxtCodigoEstudiante_KeyPress(object sender, KeyPressEventArgs e)
+            {
+                // Solo permite dígitos (0-9) y teclas de control (BackSpace, Delete, etc.)
+                if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+                {
+                    e.Handled = true; // Ignorar la tecla
+                }
+            }
+        }
+
 }

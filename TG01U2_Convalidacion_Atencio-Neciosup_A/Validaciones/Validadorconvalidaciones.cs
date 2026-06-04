@@ -1,4 +1,10 @@
-﻿using System;
+// ============================================================
+// ARCHIVO: Validaciones/ValidadorConvalidaciones.cs
+// CAMBIO:  Se agrega ValidarCodigoEstudiante y se incluye
+//          en ValidarConvalidacionCompleta
+// ============================================================
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -6,18 +12,14 @@ using System.Text.RegularExpressions;
 
 namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
 {
-    /// <summary>
-    /// Validaciones centralizadas para todas las operaciones de convalidación.
-    /// Único punto de verdad para reglas de negocio de entrada de datos.
-    /// </summary>
     public static class ValidadorConvalidaciones
     {
-        public const int LONGITUD_MINIMA_NOMBRE = 3;
-        public const int LONGITUD_MAXIMA_NOMBRE = 100;
+        public const int LONGITUD_MINIMA_NOMBRE      = 3;
+        public const int LONGITUD_MAXIMA_NOMBRE      = 100;
         public const int LONGITUD_MINIMA_UNIVERSIDAD = 3;
         public const int LONGITUD_MAXIMA_UNIVERSIDAD = 150;
-        public const int AÑO_MINIMO = 1985;
-        public const double NOTA_MINIMA = 0.0;
+        public const int AÑO_MINIMO                  = 1985;
+        public const double NOTA_MINIMA              = 0.0;
 
         private static readonly string[] PaisesValidos =
         {
@@ -25,6 +27,29 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             "Ecuador", "España", "Francia", "Grecia", "Italia",
             "México", "Paraguay", "Perú"
         };
+
+        // ─── NUEVO: Validar Código de Estudiante ──────────────────────────────────
+        /// <summary>
+        /// Valida el código del estudiante (solo números, exactamente 10 dígitos).
+        /// Ejemplo: 2024079964, 2020054427
+        /// </summary>
+        public static (bool esValido, string mensaje) ValidarCodigoEstudiante(string codigo)
+        {
+            if (string.IsNullOrWhiteSpace(codigo))
+                return (false, "El código del estudiante no puede estar vacío.");
+
+            codigo = codigo.Trim();
+
+            if (codigo.Length != 10)
+                return (false, "El código debe tener exactamente 10 dígitos (ej: 2024079964).");
+
+            if (!Regex.IsMatch(codigo, @"^\d{10}$"))
+                return (false, "El código solo puede contener números (0-9).");
+
+            return (true, "");
+        }
+
+        // ─── Validaciones existentes (sin cambios) ────────────────────────────────
 
         public static (bool esValido, string mensaje) ValidarNombreEstudiante(string nombre)
         {
@@ -86,9 +111,6 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             return (true, "");
         }
 
-        /// <summary>
-        /// Valida el semestre. Acepta "1" o "2" (valores del ComboBox).
-        /// </summary>
         public static (bool esValido, string mensaje) ValidarSemestre(string semestre)
         {
             if (semestre != "1" && semestre != "2")
@@ -102,7 +124,8 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             if (string.IsNullOrWhiteSpace(notaTexto))
                 return (false, "La nota no puede estar vacía.");
 
-            if (!double.TryParse(notaTexto, NumberStyles.Number, CultureInfo.InvariantCulture, out double nota))
+            if (!double.TryParse(notaTexto, NumberStyles.Number,
+                    CultureInfo.InvariantCulture, out double nota))
                 return (false, "La nota debe ser un número válido.");
 
             if (nota < NOTA_MINIMA)
@@ -114,24 +137,26 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             return (true, "");
         }
 
-        public static (bool esValido, string mensaje) ValidarCursoDuplicado(List<Curso> cursos, Curso cursoNuevo)
+        public static (bool esValido, string mensaje) ValidarCursoDuplicado(
+            List<Curso> cursos, Curso cursoNuevo)
         {
-            if (cursos == null || cursos.Count == 0)
-                return (true, "");
+            if (cursos == null || cursos.Count == 0) return (true, "");
 
             if (cursos.Any(c => c.Codigo == cursoNuevo.Codigo))
-                return (false, $"El curso '{cursoNuevo.Nombre}' ya ha sido agregado a esta convalidación.");
+                return (false, $"El curso '{cursoNuevo.Nombre}' ya fue agregado a esta convalidación.");
 
             return (true, "");
         }
 
-        public static (bool esValido, string mensaje) ValidarConvalidacionCompleta(Convalidacion convalidacion)
+        public static (bool esValido, string mensaje) ValidarConvalidacionCompleta(
+            Convalidacion convalidacion)
         {
             if (convalidacion == null)
                 return (false, "La convalidación no puede ser nula.");
 
             var checks = new[]
             {
+                ValidarCodigoEstudiante(convalidacion.CodigoEstudiante),  // ← NUEVO
                 ValidarNombreEstudiante(convalidacion.NombreEstudiante),
                 ValidarPais(convalidacion.PaisOrigen),
                 ValidarUniversidad(convalidacion.UniversidadOrigen),
@@ -142,12 +167,14 @@ namespace TG01U2_Convalidacion_Atencio_Neciosup_A.Validaciones
             foreach (var (esValido, mensaje) in checks)
                 if (!esValido) return (false, mensaje);
 
-            if (convalidacion.CursosConvalidados == null || convalidacion.CursosConvalidados.Count == 0)
+            if (convalidacion.CursosConvalidados == null ||
+                convalidacion.CursosConvalidados.Count == 0)
                 return (false, "La convalidación debe tener al menos un curso.");
 
             foreach (var curso in convalidacion.CursosConvalidados)
             {
-                if (string.IsNullOrWhiteSpace(curso.Codigo) || string.IsNullOrWhiteSpace(curso.Nombre))
+                if (string.IsNullOrWhiteSpace(curso.Codigo) ||
+                    string.IsNullOrWhiteSpace(curso.Nombre))
                     return (false, "Todos los cursos deben tener código y nombre.");
 
                 if (curso.Creditos <= 0)
